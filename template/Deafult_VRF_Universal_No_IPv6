@@ -1,0 +1,355 @@
+##template variables
+#    Copyright (c) 2019-2022 by Cisco Systems, Inc.
+#    All rights reserved.
+
+@(IsMandatory=true, IsVrfName=true, IsMsoManaged=true)
+string vrfName;
+
+@(IsMandatory=true, IsVrfVlanId=true)
+integer vrfVlanId;
+
+@(IsMandatory=true, IsVrfSegmentId=true, IsMsoManaged=true)
+integer vrfSegmentId;
+
+@(IsMandatory=true,  IsNveId=true)
+integer nveId{
+   defaultValue=1;
+   };
+
+@(IsMandatory=false, IsInstance=true, DisplayName="Loopback Id", Description="0-1023", IsLoopbackId=true)
+integer loopbackId{
+  min = 0;
+  max = 1023;
+};
+
+@(IsMandatory=false, IsInstance=true, DisplayName="Loopback IPv4 Address", Description="IPv4 address",IsLoopbackIPv4=true)
+ipV4Address loopbackIpAddress;
+
+
+@(IsMandatory=true, IsAsn=true, IsFabricInstance=true)
+string asn;
+
+@(IsMandatory=false, DisplayName="VRF VLAN Name", Description = "if > 32 chars enable:system vlan long-name")
+string vrfVlanName {
+  regularExpr=^[^\?,\\,\s]*$;
+  minLength = 0;
+  maxLength = 128;
+};
+
+
+@(IsMandatory=false, DisplayName="VRF Interface Description")
+string vrfIntfDescription;
+
+@(IsMandatory=false, DisplayName="VRF Description", IsMsoManaged=true)
+string vrfDescription;
+
+@(IsMandatory=false, DisplayName="VRF Interface MTU", Description="68-9216", Section="Advanced")
+integer mtu {
+  min = 68;
+  max = 9216;
+  defaultValue = 9216;
+};
+
+@(IsMandatory=false, DisplayName="Loopback Routing Tag", Description="0-4294967295", Section="Advanced", IsMsoManaged=true)
+long tag {
+  min = 0;
+  max = 4294967295;
+  defaultValue = 12345;
+};
+
+@(IsMandatory=false, DisplayName="Redistribute Direct Route Map", Section="Advanced", IsMsoManaged=true)
+string vrfRouteMap {
+    defaultValue = FABRIC-RMAP-REDIST-SUBNET;
+};
+
+@(IsMandatory=false, DisplayName="Max BGP Paths", Description="1-64", Section="Advanced")
+integer maxBgpPaths {
+  min = 1;
+  max = 64;
+  defaultValue = 1;
+};
+
+@(IsMandatory=false, DisplayName="Max iBGP Paths", Description="1-64", Section="Advanced")
+integer maxIbgpPaths {
+  min = 1;
+  max = 64;
+  defaultValue = 2;
+};
+
+
+@(IsMandatory=false, DisplayName="TRM Enable", Description="Enable Tenant Routed Multicast", Section="Advanced", IsFabricInstance=true, IsMsoManaged=true)
+boolean trmEnabled {
+  defaultValue=false;
+};
+
+@(IsMandatory=false, IsShow="trmEnabled==true", DisplayName="No RP", Description="There is no RP as only SSM is used", Section="Advanced", IsFabricInstance=true, IsMsoManaged=true)
+boolean isRPAbsent {
+   defaultValue=false;
+};
+
+@(IsMandatory=false, IsShow="trmEnabled==true && isRPAbsent!=true", DisplayName="Is RP External", Description="Is RP external to the fabric?", Section="Advanced", IsFabricInstance=true, IsMsoManaged=true)
+boolean isRPExternal {
+   defaultValue=false;
+};
+
+@(IsMandatory="trmEnabled!=false && isRPAbsent!=true", IsShow="trmEnabled==true && isRPAbsent!=true", DisplayName="RP Address", Description="IPv4 Address", Section="Advanced", IsFabricInstance=true, IsMsoManaged=true)
+ipV4Address rpAddress;
+
+@(IsMandatory="trmEnabled!=false && isRPExternal==false && isRPAbsent!=true", IsShow="trmEnabled==true && isRPAbsent!=true && isRPExternal==false", DisplayName="RP Loopback ID", Description="0-1023", Section="Advanced", IsFabricInstance=true)
+integer loopbackNumber{
+  min = 0;
+  max = 1023;
+};
+
+@(IsMandatory="trmEnabled!=false", IsShow="trmEnabled==true", DisplayName="Underlay Mcast Address", Description="IPv4 Multicast Address. Applicable only when 'TRM Enable' is on", Section="Advanced", IsMcastUnderlay=true, IsFabricInstance=true)
+ipV4Address L3VniMcastGroup;
+
+@(IsMandatory=false, IsShow="trmEnabled==true && isRPAbsent!=true", DisplayName="Overlay Mcast Groups", Description="224.0.0.0/4 to 239.255.255.255/4", Section="Advanced", IsFabricInstance=true, IsMsoManaged=true)
+ipV4AddressWithSubnet multicastGroup;
+
+@(IsMandatory=false, DisplayName="Disable RT <br/>Auto-Generate", Description="Applicable to IPv4, VPN/EVPN/MVPN", Section="Route Target", IsMsoManaged=true)
+boolean disableRtAuto {
+    defaultValue = false;
+};
+
+@(IsMandatory="false", DisplayName="Import", Description="For VPN Routes Import, One or a Comma Separated List", Section="Route Target", IsMsoManaged=true)
+string[] routeTargetImport {
+    regularExpr=^((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])(,((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])){0,9}$;
+};
+
+@(IsMandatory="false", DisplayName="Export", Description="For VPN Routes Export, One or a Comma Separated List", Section="Route Target", IsMsoManaged=true)
+string[] routeTargetExport {
+    regularExpr=^((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])(,((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])){0,9}$;
+};
+
+@(IsMandatory="false", DisplayName="Import EVPN", Description="For EVPN Routes Import, One or a Comma Separated List", Section="Route Target", IsMsoManaged=true)
+string[] routeTargetImportEvpn {
+    regularExpr=^((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])(,((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])){0,9}$;
+};
+
+@(IsMandatory="false", DisplayName="Export EVPN", Description="For EVPN Routes Export, One or a Comma Separated List", Section="Route Target", IsMsoManaged=true)
+string[] routeTargetExportEvpn {
+    regularExpr=^((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])(,((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])){0,9}$;
+};
+
+@(IsMandatory="false", DisplayName="Import MVPN", IsShow="trmEnabled==true", Description="For MVPN Routes Import, One or a Comma Separated List", Section="Route Target", IsFabricInstance=true, IsMsoManaged=true)
+string[] routeTargetImportMvpn {
+    regularExpr=^((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])(,((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])){0,9}$;
+};
+
+@(IsMandatory="false", DisplayName="Export MVPN", IsShow="trmEnabled==true", Description="For MVPN Routes Export, One or a Comma Separated List", Section="Route Target", IsFabricInstance=true, IsMsoManaged=true)
+string[] routeTargetExportMvpn {
+    regularExpr=^((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])(,((?!0.0)([1-9]{1}[0-9]{0,8}|[1-3]{1}[0-9]{1,9}|[4]{1}([0-1]{1}[0-9]{8}|[2]{1}([0-8]{1}[0-9]{7}|[9]{1}([0-3]{1}[0-9]{6}|[4]{1}([0-8]{1}[0-9]{5}|[9]{1}([0-5]{1}[0-9]{4}|[6]{1}([0-6]{1}[0-9]{3}|[7]{1}([0-1]{1}[0-9]{2}|[2]{1}([0-8]{1}[0-9]{1}|[9]{1}[0-5]{1}))))))))|([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0)(\.([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5]|0))?)|(?!0.0.0.0)(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)):([1-5]\d{4}|[1-9]\d{0,3}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])){0,9}$;
+};
+
+##
+
+##template content
+
+vlan $$vrfVlanId$$
+if ($$vrfVlanName$$ != "") {
+  name $$vrfVlanName$$
+}
+  vn-segment $$vrfSegmentId$$
+  
+vrf context $$vrfName$$
+if ($$vrfDescription$$ != "") {
+  description $$vrfDescription$$
+}
+  vni $$vrfSegmentId$$
+  rd auto
+  address-family ipv4 unicast
+ if ($$disableRtAuto$$ == "true") {
+ }
+ else {
+    route-target both auto
+    route-target both auto evpn
+  if ($$trmEnabled$$ == "true") {
+    route-target both auto mvpn
+  }
+ }
+
+ if ($$routeTargetImport$$ != "") {
+  foreach ITEM in $$routeTargetImport$$ {
+   if (@ITEM != "") {
+    route-target import @ITEM
+   }
+  }
+ }
+
+ if ($$routeTargetImportEvpn$$ != "") {
+  foreach ITEM in $$routeTargetImportEvpn$$ {
+   if (@ITEM != "") {
+    route-target import @ITEM evpn
+   }
+  }
+ }
+
+ if ($$routeTargetExport$$ != "") {
+  foreach ITEM in $$routeTargetExport$$ {
+   if (@ITEM != "") {
+    route-target export @ITEM
+   }
+  }
+ }
+
+ if ($$routeTargetExportEvpn$$ != "") {
+  foreach ITEM in $$routeTargetExportEvpn$$ {
+   if (@ITEM != "") {
+    route-target export @ITEM evpn
+   }
+  }
+ }
+
+ if ($$trmEnabled$$ == "true") {
+  if ($$routeTargetImportMvpn$$ != "") {
+   foreach ITEM in $$routeTargetImportMvpn$$ {
+    if (@ITEM != "") {
+    route-target import @ITEM mvpn
+    }
+   }
+  }
+
+  if ($$routeTargetExportMvpn$$ != "") {
+   foreach ITEM in $$routeTargetExportMvpn$$ {
+    if (@ITEM != "") {
+    route-target export @ITEM mvpn
+    }
+   }
+  }
+ }
+
+  if ($$disableRtAuto$$ == "true") {
+  }
+  else {
+    route-target both auto
+    route-target both auto evpn
+  }
+
+ if ($$routeTargetImport$$ != "") {
+  foreach ITEM in $$routeTargetImport$$ {
+   if (@ITEM != "") {
+    route-target import @ITEM
+   }
+  }
+ }
+
+ if ($$routeTargetImportEvpn$$ != "") {
+  foreach ITEM in $$routeTargetImportEvpn$$ {
+   if (@ITEM != "") {
+    route-target import @ITEM evpn
+   }
+  }
+ }
+
+ if ($$routeTargetExport$$ != "") {
+  foreach ITEM in $$routeTargetExport$$ {
+   if (@ITEM != "") {
+    route-target export @ITEM
+   }
+  }
+ }
+
+ if ($$routeTargetExportEvpn$$ != "") {
+  foreach ITEM in $$routeTargetExportEvpn$$ {
+   if (@ITEM != "") {
+    route-target export @ITEM evpn
+   }
+  }
+ }
+
+if ($$trmEnabled$$ == "true") {
+  if ($$rpAddress$$ != "") {
+    if ($$multicastGroup$$  != "") {
+  ip pim rp-address $$rpAddress$$ group-list $$multicastGroup$$
+    }
+    else {
+  ip pim rp-address $$rpAddress$$ group-list 224.0.0.0/4
+    }
+  }
+  ip pim ssm range 232.0.0.0/8 
+  ip multicast multipath s-g-hash next-hop-based
+}
+    
+interface Vlan$$vrfVlanId$$
+if ($$vrfIntfDescription$$ != "") {
+  description $$vrfIntfDescription$$
+}
+  vrf member $$vrfName$$
+  ip forward
+  no ip redirects
+
+if($$mtu$$ != ""){
+  mtu $$mtu$$
+}
+else {
+  mtu 9216
+}
+if ($$trmEnabled$$ == "true") {
+  ip pim sparse-mode
+}
+  no shutdown
+
+router bgp $$asn$$
+  vrf $$vrfName$$
+    address-family ipv4 unicast
+      advertise l2vpn evpn
+    if ($$vrfRouteMap$$ != "") {
+      redistribute direct route-map $$vrfRouteMap$$
+    }
+    else {
+      redistribute direct route-map FABRIC-RMAP-REDIST-SUBNET
+    }
+    if ($$maxBgpPaths$$ != "1" && $$maxBgpPaths$$ != "") {
+      maximum-paths $$maxBgpPaths$$
+    }
+    if ($$maxIbgpPaths$$ != "1" && $$maxIbgpPaths$$ != "") {
+      maximum-paths ibgp $$maxIbgpPaths$$
+    }
+    if ($$vrfRouteMap$$ != "") {
+      redistribute direct route-map $$vrfRouteMap$$
+    }
+    else {
+      redistribute direct route-map FABRIC-RMAP-REDIST-SUBNET
+    }
+    if ($$maxBgpPaths$$ != "1" && $$maxBgpPaths$$ != "") {
+      maximum-paths $$maxBgpPaths$$
+    }
+    if ($$maxIbgpPaths$$ != "1" && $$maxIbgpPaths$$ != "") {
+      maximum-paths ibgp $$maxIbgpPaths$$
+    }
+      
+interface nve$$nveId$$
+  member vni $$vrfSegmentId$$ associate-vrf
+if ($$trmEnabled$$ == "true") {
+    mcast-group $$L3VniMcastGroup$$
+}
+
+if ($$loopbackId$$ != "") {
+if ($$loopbackIpAddress$$ != "") {
+interface loopback$$loopbackId$$
+  vrf member $$vrfName$$
+if ($$loopbackIpAddress$$ != "") {
+ if ($$tag$$ != "") {
+  ip address $$loopbackIpAddress$$/32 tag $$tag$$
+ }
+ else {
+  ip address $$loopbackIpAddress$$/32
+ }
+}
+}
+}
+
+if ($$trmEnabled$$ == "true" && $$isRPExternal$$ == "false" && $$loopbackNumber$$ != "" && $$rpAddress$$ != "") {
+interface loopback$$loopbackNumber$$
+  vrf member $$vrfName$$
+ if ($$tag$$ != "") {
+  ip address $$rpAddress$$/32 tag $$tag$$
+ }
+ else {
+  ip address $$rpAddress$$/32
+ }
+  ip pim sparse-mode
+}
+}
+##

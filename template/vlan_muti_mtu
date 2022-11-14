@@ -1,0 +1,13 @@
+##
+##template variables
+integerRange vlan_range;
+@(internal=true)
+integer vlanName;
+##
+##template content
+foreach vlanID in $$vlan_range$${
+vlan @vlanID
+interface Vlan @vlanID
+mtu 9216
+}
+##

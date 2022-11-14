@@ -1,0 +1,22 @@
+##template variables
+
+@(IsMandatory=true, DisplayName="Interface", Description="Provide Interface range Name e.g. eth1/9-38")
+interfaceRange INTF_NAME_RANGE;
+
+@(DisplayName="Interface Description", Description="Add description to the interface")
+string DESC {
+  minLength = 1;
+  maxLength = 254;
+};
+
+#    Copyright (c) 2018 by Cisco Systems, Inc.
+#    All rights reserved.
+
+##
+##template content
+foreach INTF in $$INTF_NAME_RANGE$${
+interface @INTF
+  description $$DESC$$
+  no shut
+}
+##

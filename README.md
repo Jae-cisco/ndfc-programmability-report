@@ -10,3 +10,7 @@ This is the sample output that displays the output of show command exceution in 
     <img width="1580" alt="스크린샷 2024-06-03 오후 1 25 54" src="https://github.com/Jae-cisco/ndfc-templates/assets/76939023/9a5d5329-2cfa-4af6-8f1b-0b175e3a39e3"> <br/>
 
     <img width="1592" alt="스크린샷 2024-06-03 오후 1 27 03" src="https://github.com/Jae-cisco/ndfc-templates/assets/76939023/7c2d2460-274f-4fb0-8f2a-e53e4b8eb082"> <br/>
+
+This is the sample output that displays only "Connected" status interfaces in NDFC Programmable Report.  <br/>
+ - connected_interfaces.py  <br/>
+    ![image](https://github.com/Jae-cisco/ndfc-templates/assets/76939023/91560fe2-2044-46ff-bd5d-eeee23c20f65) <br/>
